@@ -1,0 +1,11 @@
+{
+  "step-by-step": {
+    "initialize": "./build/nnbd init nnb --chain-id 517 --home /root/david/2.cosmos/1.NNB/0.nnb-chain --default-denom uom",
+    "generate validator": "./build/nnbd keys add validator --keyring-backend test --home /root/david/2.cosmos/1.NNB/0.nnb-chain",
+    "add genesis account": "./build/nnbd genesis add-genesis-account $(./build/nnbd keys show validator -a --keyring-backend test --home /root/david/2.cosmos/1.NNB/0.nnb-chain) 100000000000000uom --home /root/david/2.cosmos/1.NNB/0.nnb-chain",
+    "generate gentx": "./build/nnbd genesis gentx validator 100000000uom --chain-id 517 --keyring-backend test --home /root/david/2.cosmos/1.NNB/0.nnb-chain",
+    "collect gentx": "./build/nnbd genesis collect-gentxs --home /root/david/2.cosmos/1.NNB/0.nnb-chain",
+    "start node": "./build/nnbd start --home /root/david/2.cosmos/1.NNB/0.nnb-chain"
+  },
+  "one-shot": "make build-and-run-single-node"
+}

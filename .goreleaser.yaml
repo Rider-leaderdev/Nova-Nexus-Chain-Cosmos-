@@ -1,0 +1,214 @@
+---
+version: 2
+project_name: nnbd
+
+env:
+  - GO111MODULE=on
+  - CGO_ENABLED=1
+
+before:
+  hooks:
+    - wget https://github.com/CosmWasm/wasmvm/releases/download/{{ .Env.COSMWASM_VERSION }}/checksums.txt -O /tmp/checksums.txt
+
+builds:
+  - id: nnbd-darwin-amd64
+    main: ./cmd/nnbd/main.go
+    binary: nnbd
+    hooks:
+      pre:
+        - wget https://github.com/CosmWasm/wasmvm/releases/download/{{ .Env.COSMWASM_VERSION }}/libwasmvmstatic_darwin.a -O /lib/libwasmvmstatic_darwin.a
+        # verify checksum
+        - sha256sum /lib/libwasmvmstatic_darwin.a | grep $(cat /tmp/checksums.txt | grep libwasmvmstatic_darwin | cut -d ' ' -f 1) || exit 1
+    env:
+      - CC=o64-clang
+      - CGO_LDFLAGS=-L/lib
+    goos:
+      - darwin
+    goarch:
+      - amd64
+    flags:
+      - -mod=readonly
+      - -trimpath
+    ldflags:
+      - -X github.com/cosmos/cosmos-sdk/version.Name=mantrachain
+      - -X github.com/cosmos/cosmos-sdk/version.AppName=nnbd
+      - -X github.com/cosmos/cosmos-sdk/version.Version={{ .Version }}
+      - -X github.com/cosmos/cosmos-sdk/version.Commit={{ .ShortCommit }}
+      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,static_wasm
+      - -X github.com/cometbft/cometbft/version.TMCoreSemVer={{ .Env.CMT_VERSION }}
+      - -w -s
+      - -linkmode=external
+    tags:
+      - netgo
+      - ledger
+      - pebbledb
+      - static_wasm
+
+  - id: nnbd-darwin-arm64
+    main: ./cmd/nnbd/main.go
+    binary: nnbd
+    hooks:
+      pre:
+        - wget https://github.com/CosmWasm/wasmvm/releases/download/{{ .Env.COSMWASM_VERSION }}/libwasmvmstatic_darwin.a -O /lib/libwasmvmstatic_darwin.a
+        # verify checksum
+        - sha256sum /lib/libwasmvmstatic_darwin.a | grep $(cat /tmp/checksums.txt | grep libwasmvmstatic_darwin | cut -d ' ' -f 1) || exit 1
+    env:
+      - CC=oa64-clang
+      - CGO_LDFLAGS=-L/lib
+    goos:
+      - darwin
+    goarch:
+      - arm64
+    flags:
+      - -mod=readonly
+      - -trimpath
+    ldflags:
+      - -X github.com/cosmos/cosmos-sdk/version.Name=mantrachain
+      - -X github.com/cosmos/cosmos-sdk/version.AppName=nnbd
+      - -X github.com/cosmos/cosmos-sdk/version.Version={{ .Version }}
+      - -X github.com/cosmos/cosmos-sdk/version.Commit={{ .ShortCommit }}
+      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,static_wasm
+      - -X github.com/cometbft/cometbft/version.TMCoreSemVer={{ .Env.CMT_VERSION }}
+      - -w -s
+      - -linkmode=external
+    tags:
+      - netgo
+      - ledger
+      - pebbledb
+      - static_wasm
+
+  - id: nnbd-linux-amd64
+    main: ./cmd/nnbd
+    binary: nnbd
+    hooks:
+      pre:
+        - apk add --update linux-headers
+        - wget https://github.com/CosmWasm/wasmvm/releases/download/{{ .Env.COSMWASM_VERSION }}/libwasmvm_muslc.x86_64.a -O /lib/libwasmvm_muslc.x86_64.a
+        # verify checksum
+        - sha256sum /lib/libwasmvm_muslc.x86_64.a | grep $(cat /tmp/checksums.txt | grep libwasmvm_muslc.x86_64 | cut -d ' ' -f 1) || exit 1
+    goos:
+      - linux
+    goarch:
+      - amd64
+    flags:
+      - -mod=readonly
+      - -trimpath
+    ldflags:
+      - -X github.com/cosmos/cosmos-sdk/version.Name=mantrachain
+      - -X github.com/cosmos/cosmos-sdk/version.AppName=nnbd
+      - -X github.com/cosmos/cosmos-sdk/version.Version={{ .Version }}
+      - -X github.com/cosmos/cosmos-sdk/version.Commit={{ .ShortCommit }}
+      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,muslc,osusergo
+      - -X github.com/cometbft/cometbft/version.TMCoreSemVer={{ .Env.CMT_VERSION }}
+      - -w -s
+      - -linkmode=external
+      - -extldflags '-Wl,-z,muldefs -static -lm'
+    tags:
+      - netgo
+      - ledger
+      - muslc
+      - osusergo
+      - pebbledb
+
+  - id: nnbd-linux-arm64
+    main: ./cmd/nnbd
+    binary: nnbd
+    hooks:
+      pre:
+        - apk add --update linux-headers
+        - wget https://github.com/CosmWasm/wasmvm/releases/download/{{ .Env.COSMWASM_VERSION }}/libwasmvm_muslc.aarch64.a -O /lib/libwasmvm_muslc.aarch64.a
+        # verify checksum
+        - sha256sum /lib/libwasmvm_muslc.aarch64.a | grep $(cat /tmp/checksums.txt | grep libwasmvm_muslc.aarch64 | cut -d ' ' -f 1) || exit 1
+    goos:
+      - linux
+    goarch:
+      - arm64
+    flags:
+      - -mod=readonly
+      - -trimpath
+    ldflags:
+      - -X github.com/cosmos/cosmos-sdk/version.Name=mantrachain
+      - -X github.com/cosmos/cosmos-sdk/version.AppName=nnbd
+      - -X github.com/cosmos/cosmos-sdk/version.Version={{ .Version }}
+      - -X github.com/cosmos/cosmos-sdk/version.Commit={{ .ShortCommit }}
+      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,muslc,osusergo
+      - -X github.com/cometbft/cometbft/version.TMCoreSemVer={{ .Env.CMT_VERSION }}
+      - -w -s
+      - -linkmode=external
+      - -extldflags '-Wl,-z,muldefs -static -lm'
+    tags:
+      - netgo
+      - ledger
+      - muslc
+      - osusergo
+      - pebbledb
+
+archives:
+  - id: zipped
+    builds:
+      - nnbd-linux-amd64
+      - nnbd-linux-arm64
+      - nnbd-darwin-amd64
+      - nnbd-darwin-arm64
+    name_template: "{{.ProjectName}}-{{ .Version }}-{{ .Os }}-{{ .Arch }}"
+    format: tar.gz
+    files:
+      - none*
+  - id: binaries
+    builds:
+      - nnbd-linux-amd64
+      - nnbd-linux-arm64
+      - nnbd-darwin-amd64
+      - nnbd-darwin-arm64
+    name_template: "{{.ProjectName}}-{{ .Version }}-{{ .Os }}-{{ .Arch }}"
+    format: binary
+    files:
+      - none*
+
+checksum:
+  name_template: "sha256sum.txt"
+  algorithm: sha256
+
+# Docs: https://goreleaser.com/customization/changelog/
+changelog:
+  disable: true
+
+# Docs: https://goreleaser.com/customization/release/
+release:
+  github:
+    owner: "{{ .Env.REPO_OWNER }}"
+    name: "{{ .Env.REPO_NAME }}"
+  replace_existing_draft: true
+  header: |
+    < DESCRIPTION OF RELEASE >
+
+    ## Changelog
+
+    See the full changelog [here](https://github.com/{{ .Env.REPO_OWNER }}/{{ .Env.REPO_NAME }}/blob/v{{ .Version }}/CHANGELOG.md)
+
+    #### 🔨 Build from source
+
+    If you prefer to build from source, you can use the following commands:
+
+    ````bash
+    git clone https://github.com/{{ .Env.REPO_OWNER }}/{{ .Env.REPO_NAME }}
+    cd mantrachain && git checkout v{{ .Version }}
+    make install
+    ````
+
+  name_template: "Mantrachain v{{.Version}}"
+  mode: replace
+  draft: true
+# Docs: https://goreleaser.com/customization/announce/
+# We could automatically announce the release in
+# - discord
+# - slack
+# - twitter
+# - webhooks
+# - telegram
+# - reddit
+#
+# announce:
+# discord:
+#   enabled: true
+#   message_template: 'New {{.Tag}} is out!'

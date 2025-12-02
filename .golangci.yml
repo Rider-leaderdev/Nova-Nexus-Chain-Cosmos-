@@ -1,0 +1,88 @@
+version: "2"
+run:
+  tests: true
+  allow-parallel-runners: true
+linters:
+  default: none
+  enable:
+    - asciicheck
+    - bidichk
+    - bodyclose
+    - canonicalheader
+    - copyloopvar
+    - durationcheck
+    - errcheck
+    - errname
+    - fatcontext
+    - gochecksumtype
+    - goconst
+    - gocritic
+    - goheader
+    - gomodguard
+    - goprintffuncname
+    - govet
+    - importas
+    - ineffassign
+    - makezero
+    - misspell
+    - nakedret
+    - nilnil
+    - nolintlint
+    - promlinter
+    - revive
+    - staticcheck
+    - testableexamples
+    - testifylint
+    - thelper
+    - tparallel
+    - unconvert
+    - unparam
+    - unused
+    - usestdlibvars
+    - usetesting
+    - whitespace
+    - zerologlint
+  settings:
+    revive:
+      rules:
+        - name: function-result-limit
+          arguments:
+            - 5
+          severity: warning
+          disabled: false
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters:
+          - staticcheck
+        text: 'ST1003:'
+      - linters:
+          - staticcheck
+        text: 'ST1005:'
+      - linters:
+          - staticcheck
+        text: 'QF1008:'
+    paths:
+      - .*\.pb\.gw\.go$
+      - third_party$
+      - builtin$
+      - examples$
+issues:
+  max-issues-per-linter: 10000
+  max-same-issues: 10000
+formatters:
+  enable:
+    - goimports
+    - gofumpt
+  exclusions:
+    generated: lax
+    paths:
+      - .*\.pb\.gw\.go$
+      - third_party$
+      - builtin$
+      - examples$
